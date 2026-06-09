@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AxenMod Panel</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0}
+.header{background:#fff;padding:12px 16px;display:flex;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.container{max-width:900px;margin:auto;padding:20px}
+.card{background:#fff;border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+input,button{width:100%;padding:10px;margin:6px 0;box-sizing:border-box}
+button{cursor:pointer}
+#dashboard,#adminPanel{display:none}
+.emote{border:1px solid #ddd;border-radius:10px;padding:10px;margin:10px 0}
+img{max-width:100%;border-radius:10px}
+</style>
+</head>
+<body>
+<div class="header">
+<b id="siteTitle">AxenMod Panel</b>
+<button style="width:auto" onclick="adminLogin()">⚙ Admin</button>
+</div>
+
+<div class="container">
+
+<div id="login" class="card">
+<h3>User Login</h3>
+<input type="password" id="userPass" placeholder="Password">
+<button onclick="login()">Login</button>
+<a href="https://t.me/axenmod" target="_blank">Get Password</a>
+</div>
+
+<div id="dashboard">
+<div class="card">
+<img id="banner" src="https://via.placeholder.com/800x250?text=Banner">
+<h2 id="titleView">AxenMod Panel</h2>
+<input placeholder="Team Code">
+<input placeholder="UID">
+<div id="emotes"></div>
+<button>Send (Demo)</button>
+</div>
+</div>
+
+<div id="adminPanel" class="card">
+<h3>Admin Panel</h3>
+<input id="newTitle" placeholder="Website Name">
+<input id="newBanner" placeholder="Banner Image URL">
+<button onclick="saveSettings()">Save Settings</button>
+<hr>
+<input id="emoteName" placeholder="Emote Name">
+<input id="emoteImage" placeholder="Emote Image URL">
+<button onclick="addEmote()">Add Emote</button>
+<div id="adminEmotes"></div>
+</div>
+
+</div>
+
+<script>
+const USER_PASS="123456";
+const ADMIN_PASS="admin123";
+
+function login(){
+ if(document.getElementById('userPass').value===USER_PASS){
+   login.style.display='none';
+   dashboard.style.display='block';
+ } else alert('Wrong Password');
+}
+
+function adminLogin(){
+ const p=prompt("Admin Password");
+ if(p===ADMIN_PASS){
+   adminPanel.style.display='block';
+ } else if(p!==null) alert('Wrong Password');
+}
+
+let emotes=JSON.parse(localStorage.getItem('emotes')||'[]');
+
+function render(){
+ const e=document.getElementById('emotes');
+ const a=document.getElementById('adminEmotes');
+ e.innerHTML=''; a.innerHTML='';
+
+ emotes.forEach((x,i)=>{
+   e.innerHTML+=`<div class="emote"><img src="${x.img}"><h4>${x.name}</h4></div>`;
+   a.innerHTML+=`<div class="emote">${x.name}<button onclick="delEmote(${i})">Delete</button></div>`;
+ });
+
+ const t=localStorage.getItem('title')||'AxenMod Panel';
+ const b=localStorage.getItem('banner')||'https://via.placeholder.com/800x250?text=Banner';
+ siteTitle.textContent=t;
+ titleView.textContent=t;
+ banner.src=b;
+}
+
+function addEmote(){
+ emotes.push({
+  name:emoteName.value,
+  img:emoteImage.value
+ });
+ localStorage.setItem('emotes',JSON.stringify(emotes));
+ render();
+}
+
+function delEmote(i){
+ emotes.splice(i,1);
+ localStorage.setItem('emotes',JSON.stringify(emotes));
+ render();
+}
+
+function saveSettings(){
+ localStorage.setItem('title',newTitle.value);
+ localStorage.setItem('banner',newBanner.value);
+ render();
+}
+
+render();
+</script>
+</body>
+</html>
